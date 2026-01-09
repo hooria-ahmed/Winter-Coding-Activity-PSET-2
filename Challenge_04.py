@@ -1,20 +1,13 @@
 def count_payment_combinations(coins, total_sum):
-    def helper(index, remaining_sum):
-        if remaining_sum == 0:
-            return 1
-        if remaining_sum < 0 or index == len(coins):
-            return 0
+    n = len(coins)
+    dp = [0] * (total_sum + 1)
+    dp[0] = 1  # base case: one way to make sum 0
 
-        # Choice 1: take the coin
-        take = helper(index, remaining_sum - coins[index])
+    for coin in coins:
+        for s in range(coin, total_sum + 1):
+            dp[s] += dp[s - coin]
 
-        # Choice 2: skip the coin
-        skip = helper(index + 1, remaining_sum)
-
-        return take + skip
-
-    return helper(0, total_sum)
-
+    return dp[total_sum]
 
 
 coins = [1, 2, 3]
