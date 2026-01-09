@@ -1,30 +1,22 @@
 def can_balance_scales(arr):
     total_sum = sum(arr)
 
-    # If total sum is odd, we cannot split it evenly
+    # Step 1: Parity check
     if total_sum % 2 != 0:
         return False
 
     target = total_sum // 2
 
-    def dfs(index, current_sum):
-        # Success case
-        if current_sum == target:
-            return True
+    # Step 2: DP array
+    dp = [False] * (target + 1)
+    dp[0] = True
 
-        # Failure cases
-        if index == len(arr) or current_sum > target:
-            return False
+    # Step 3: Fill DP
+    for weight in arr:
+        for s in range(target, weight - 1, -1):
+            dp[s] = dp[s] or dp[s - weight]
 
-        # Choice 1: include current stone
-        if dfs(index + 1, current_sum + arr[index]):
-            return True
-
-        # Choice 2: exclude current stone
-        return dfs(index + 1, current_sum)
-
-    return dfs(0, 0)
-
+    return dp[target]
 
 
 arr1 = [1, 2, 3, 4]
