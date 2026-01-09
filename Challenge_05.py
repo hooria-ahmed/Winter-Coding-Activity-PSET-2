@@ -1,33 +1,22 @@
 def min_cancelled_bookings(intervals):
-    def is_overlap(a, b):
-        return a[1] > b[0] and b[1] > a[0]
-
-    n = len(intervals)
-    if n <= 1:
+    if not intervals:
         return 0
 
-    # Recursive helper
-    def helper(index, accepted):
-        if index == n:
-            return 0
+    # Sort by end time
+    intervals.sort(key=lambda x: x[1])
 
-        # Option 1: skip current meeting
-        skip = 1 + helper(index + 1, accepted)
+    removals = 0
+    end = float('-inf')
 
-        # Option 2: accept current meeting if no overlap with accepted meetings
-        can_accept = True
-        for a in accepted:
-            if is_overlap(a, intervals[index]):
-                can_accept = False
-                break
+    for start, finish in intervals:
+        if start >= end:
+            # Accept meeting
+            end = finish
+        else:
+            # Overlap → remove meeting
+            removals += 1
 
-        take = 0
-        if can_accept:
-            take = helper(index + 1, accepted + [intervals[index]])
-
-        return min(skip, take)
-
-    return helper(0, [])
+    return removals
 
 
 
