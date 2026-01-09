@@ -1,25 +1,30 @@
 def maximize_freelance_profit(deadlines, profits):
+    def find(slot):
+        # Path compression
+        if parent[slot] != slot:
+            parent[slot] = find(parent[slot])
+        return parent[slot]
+
     jobs = list(zip(deadlines, profits))
-    # Sort by profit descending
+    # Sort jobs by profit descending
     jobs.sort(key=lambda x: x[1], reverse=True)
 
     max_deadline = max(deadlines)
-    slots = [False] * (max_deadline + 1)  # Hour slots: 1..max_deadline
+    parent = [i for i in range(max_deadline + 1)]  # DSU parent array
 
     total_jobs = 0
     total_profit = 0
 
     for deadline, profit in jobs:
-        # Try to schedule in the latest available slot <= deadline
-        for t in range(deadline, 0, -1):
-            if not slots[t]:
-                slots[t] = True
-                total_jobs += 1
-                total_profit += profit
-                break  # Job scheduled, move to next
+        available_slot = find(deadline)
+        if available_slot > 0:
+            # Assign job to this slot
+            total_jobs += 1
+            total_profit += profit
+            # Mark this slot as filled: next available is slot-1
+            parent[available_slot] = find(available_slot - 1)
 
     return [total_jobs, total_profit]
-
 
 
 deadlines = [2, 1, 2, 1, 3]
