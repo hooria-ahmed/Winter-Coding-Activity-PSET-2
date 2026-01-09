@@ -1,16 +1,23 @@
 import math
 
 def calculate_minimum_speed(piles, k):
-    speed = 1
-    max_pile = max(piles)
+    left = 1
+    right = max(piles)
 
-    while speed <= max_pile:
-        hours = sum(math.ceil(pile / speed) for pile in piles)
-        if hours <= k:
-            return speed
-        speed += 1
+    def hours_needed(speed):
+        return sum(math.ceil(pile / speed) for pile in piles)
 
-    return max_pile  # fallback, if speed = max_pile is needed
+    while left < right:
+        mid = (left + right) // 2
+        if hours_needed(mid) <= k:
+            # Try a smaller speed
+            right = mid
+        else:
+            # Speed too slow, increase it
+            left = mid + 1
+
+    return left
+
 
 
 
